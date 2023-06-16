@@ -41,6 +41,7 @@
         variant="primary"
         style="width:100px;display:block;"
         class="mx-auto w-100"
+        @click="onLogin()"
         >Login</b-button
       >
       <div class="mt-2">
@@ -64,6 +65,8 @@
 </template>
 
 <script>
+import axios from 'axios'; // Import the axios library
+
 import { required } from "vuelidate/lib/validators";
 export default {
   name: "Login",
@@ -95,7 +98,7 @@ export default {
       try {
         
         const response = await this.axios.post(
-          // "https://test-for-3-2.herokuapp.com/user/Login",
+          // "http://localhost:80/Login",
           this.$root.store.server_domain +"/Login",
           // "http://132.72.65.211:80/Login",
           // "http://132.73.84.100:80/Login",
@@ -111,9 +114,13 @@ export default {
         this.$root.store.login(this.form.username);
         this.$router.push("/");
       } catch (err) {
-        console.log(err.response);
-        this.form.submitError = err.response.data.message;
-      }
+  if (err.response && err.response.data && err.response.data.message) {
+    this.form.submitError = err.response.data.message;
+  } else {
+    console.log(err);
+    this.form.submitError = 'An error occurred during login.';
+  }
+}
     },
     onLogin() {
       // console.log("login method called");

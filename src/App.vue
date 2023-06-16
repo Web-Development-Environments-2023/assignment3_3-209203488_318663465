@@ -1,23 +1,67 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link :to="{ name: 'main' }">Vue Recipes</router-link>|
-      <router-link :to="{ name: 'search' }">Search</router-link>|
-      {{ !$root.store.username }}
-      <span v-if="!$root.store.username">
-        Guest:
-        <router-link :to="{ name: 'register' }">Register</router-link>|
-        <router-link :to="{ name: 'login' }">Login</router-link>|
-      </span>
-      <span v-else>
-        {{ $root.store.username }}: <button @click="Logout">Logout</button>|
-      </span>
-    </div>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <!-- <div class="container-fluid"> -->
+        <a class="navbar-brand" href="#">L&T Recipes</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <router-link :to="{ name: 'main' }" class="nav-link">Main</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :to="{ name: 'search' }" class="nav-link">Search</router-link>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Personal              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a></div>
+            </li>
+          </ul>
+
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <span class="navbar-text" v-if="!$root.store.username">
+                Guest:
+              </span>
+            </li>
+            <li class="nav-item" v-if="!$root.store.username">
+              <a class="nav-link" href="#">
+                <router-link :to="{ name: 'register' }">Register</router-link>
+              </a>
+            </li>
+            <li class="nav-item" v-if="!$root.store.username">
+              <a class="nav-link" href="#">
+                <router-link :to="{ name: 'login' }">Login</router-link>
+              </a>
+            </li>
+            
+            <li class="nav-item" v-if="$root.store.username">
+              <span class="navbar-text">
+                {{ $root.store.username }}:
+              </span>
+            </li>
+            <li class="nav-item" v-if="$root.store.username">
+              <a class="nav-link" href="#">
+                <button @click="Logout" class="btn btn-link">Logout</button>
+              </a>
+            </li>
+          </ul>
+        </div>
+      <!-- </div> -->
+    </nav>
     <router-view />
   </div>
 </template>
 
+
+
 <script>
+
 export default {
   name: "App",
   methods: {

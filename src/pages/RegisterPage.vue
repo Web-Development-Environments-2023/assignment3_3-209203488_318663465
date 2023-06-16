@@ -89,13 +89,68 @@
           The confirmed password is not equal to the original password
         </b-form-invalid-feedback>
       </b-form-group>
+      <b-form-group
+  id="input-group-email"
+  label-cols-sm="3"
+  label="Email:"
+  label-for="email"
+>
+  <b-form-input
+    id="email"
+    type="email"
+    v-model="$v.form.email.$model"
+    :state="validateState('email')"
+  ></b-form-input>
+  <b-form-invalid-feedback v-if="!$v.form.email.required">
+    Email is required
+  </b-form-invalid-feedback>
+  <b-form-invalid-feedback v-else-if="!$v.form.email.email">
+    Invalid email format
+  </b-form-invalid-feedback>
+</b-form-group>
 
-      <b-button type="reset" variant="danger">Reset</b-button>
+<b-form-group
+  id="input-group-firstname"
+  label-cols-sm="3"
+  label="First Name:"
+  label-for="firstname"
+>
+  <b-form-input
+    id="firstname"
+    type="text"
+    v-model="$v.form.firstname.$model"
+    :state="validateState('firstname')"
+  ></b-form-input>
+  <b-form-invalid-feedback v-if="!$v.form.firstname.required">
+    First name is required
+  </b-form-invalid-feedback>
+</b-form-group>
+
+<b-form-group
+  id="input-group-lastname"
+  label-cols-sm="3"
+  label="Last Name:"
+  label-for="lastname"
+>
+  <b-form-input
+    id="lastname"
+    type="text"
+    v-model="$v.form.lastname.$model"
+    :state="validateState('lastname')"
+  ></b-form-input>
+  <b-form-invalid-feedback v-if="!$v.form.lastname.required">
+    Last name is required
+  </b-form-invalid-feedback>
+</b-form-group>
+
+
+      <b-button type="reset" variant="danger" @click="onReset()">Reset</b-button>
       <b-button
         type="submit"
         variant="primary"
         style="width:250px;"
         class="ml-5 w-75"
+        @click="onRegister()"
         >Register</b-button
       >
       <div class="mt-2">
@@ -136,8 +191,8 @@ export default {
     return {
       form: {
         username: "",
-        firstName: "",
-        lastName: "",
+        firstname: "",
+        lastname: "",
         country: null,
         password: "",
         confirmedPassword: "",
@@ -166,7 +221,20 @@ export default {
       confirmedPassword: {
         required,
         sameAsPassword: sameAs("password")
-      }
+      },
+      email: {
+    required,
+    email
+  },
+  firstname: {
+    required,
+    alpha,
+    
+  },
+  lastname: {
+    required,
+    alpha,
+  }
     }
   },
   mounted() {
@@ -187,7 +255,11 @@ export default {
 
           {
             username: this.form.username,
-            password: this.form.password
+            password: this.form.password,
+            firstname:  this.form.firstname,
+            lastname:  this.form.lastname,
+            country: this.form.country,
+            email: this.form.email
           }
         );
         this.$router.push("/login");

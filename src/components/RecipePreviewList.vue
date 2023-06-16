@@ -36,10 +36,13 @@ export default {
   methods: {
     async updateRecipes() {
       try {
+        this.axios.defaults.withCredentials = true;
+
         const response = await this.axios.get(
-          this.$root.store.server_domain + "/recipes/random",
-          // "https://test-for-3-2.herokuapp.com/recipes/random"
+          // this.$root.store.server_domain + "/",
+          "http://localhost:80/"
         );
+        this.axios.defaults.withCredentials = false;
 
         // console.log(response);
         const recipes = response.data.recipes;
@@ -52,6 +55,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style lang="scss" scoped>

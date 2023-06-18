@@ -54,6 +54,8 @@ export default {
       // response = this.$route.params.response;
 
       try {
+        this.axios.defaults.withCredentials = true ;
+
         response = await this.axios.get(
           // "https://test-for-3-2.herokuapp.com/recipes/info",
           this.$root.store.server_domain + "/recipes/info",
@@ -61,6 +63,7 @@ export default {
             params: { id: this.$route.params.recipeId }
           }
         );
+        this.axios.defaults.withCredentials = false;
 
         // console.log("response.status", response.status);
         if (response.status !== 200) this.$router.replace("/NotFound");

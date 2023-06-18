@@ -40,15 +40,17 @@ export default {
 
         const response = await this.axios.get(
           // this.$root.store.server_domain + "/",
-          "http://localhost:80/"
+          "http://localhost:3000/rand"
+          // this.$root.store.server_domain + "/",
+
         );
         this.axios.defaults.withCredentials = false;
 
-        // console.log(response);
-        const recipes = response.data.recipes;
+        console.log(response);
+        const recipes = response.data;
         this.recipes = [];
         this.recipes.push(...recipes);
-        // console.log(this.recipes);
+        // console.log(this.recipes[0]);
       } catch (error) {
         console.log(error);
       }

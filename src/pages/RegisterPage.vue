@@ -249,6 +249,8 @@ export default {
     },
     async Register() {
       try {
+        this.axios.defaults.withCredentials = true ;
+
         const response = await this.axios.post(
           // "https://test-for-3-2.herokuapp.com/user/Register",
           this.$root.store.server_domain + "/Register",
@@ -262,6 +264,8 @@ export default {
             email: this.form.email
           }
         );
+        this.axios.defaults.withCredentials = false ;
+
         this.$router.push("/login");
         // console.log(response);
       } catch (err) {

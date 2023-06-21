@@ -52,18 +52,32 @@ export default {
     try {
       let response;
       // response = this.$route.params.response;
+      console.log(this.$route.params.title);
 
       try {
-        this.axios.defaults.withCredentials = true ;
+        if (this.$route.params.title == "My Recipes") {
+          response = await this.axios.get(
+            // "https://test-for-3-2.herokuapp.com/recipes/info",
+            this.$root.store.server_domain +
+              "/recipes/myFullDetailes?recipeid=" +
+              this.$route.params.recipeId,
+            { withCredentials: true }
+          );
+        } else {
+          this.axios.defaults.withCredentials = true ;
 
-        response = await this.axios.get(
-          // "https://test-for-3-2.herokuapp.com/recipes/info",
-          this.$root.store.server_domain + "/recipes/info",
-          {
-            params: { id: this.$route.params.recipeId }
-          }
-        );
-        this.axios.defaults.withCredentials = false;
+response = await this.axios.get(
+  // "https://test-for-3-2.herokuapp.com/recipes/info",
+  "http://localhost:3000/recipes/" +this.$route.params.recipeId,
+  // this.$root.store.server_domain + "/recipes/info",
+
+  {
+    params: { id: this.$route.params.recipeId }
+  }
+);
+this.axios.defaults.withCredentials = false;
+
+}
 
         // console.log("response.status", response.status);
         if (response.status !== 200) this.$router.replace("/NotFound");
@@ -73,40 +87,87 @@ export default {
         return;
       }
 
-      let {
-        analyzedInstructions,
-        instructions,
-        extendedIngredients,
-        aggregateLikes,
+      let _recipe;
+
+      if (this.$route.params.title == "My Recipes") {
+        console.log(response.data);
+
+        let {
+            title,
+            imagedata,
+            readyInMinutes,
+            vegan,
+            vegetarian,
+            GFree,
+            extendedIngredients,
+            instructions,
+            numOfDish
+          } = response.data;
+
+        let _instructions = instructions;
+
+        _recipe = {
+          title,
+        imagedata,
         readyInMinutes,
-        image,
-        title
-      } = response.data.recipe;
-
-      let _instructions = analyzedInstructions
-        .map((fstep) => {
-          fstep.steps[0].step = fstep.name + fstep.steps[0].step;
-          return fstep.steps;
-        })
-        .reduce((a, b) => [...a, ...b], []);
-
-      let _recipe = {
-        instructions,
+        vegan,
+        vegetarian,
+        GFree,
+        extendedIngredients,
         _instructions,
-        analyzedInstructions,
-        extendedIngredients,
-        aggregateLikes,
-        readyInMinutes,
-        image,
-        title
-      };
+        numOfDish
+        };
+
+      } else {
+        console.log(response.data);
+
+        let {
+          analyzedInstructions,
+          instructions,
+          extendedIngredients,
+          aggregateLikes,
+          readyInMinutes,
+          image,
+          title,
+          servings,
+          vegan,
+          vegetarian,
+          glutenFree,
+        } = response.data;
+
+        console.log(analyzedInstructions);
+
+        let _instructions = analyzedInstructions
+          .map((fstep) => {
+            fstep.steps[0].step = fstep.name + fstep.steps[0].step;
+            return fstep.steps;
+          })
+          .reduce((a, b) => [...a, ...b], []);
+
+        console.log(_instructions);
+
+        _recipe = {
+          instructions,
+          _instructions,
+          analyzedInstructions,
+          extendedIngredients,
+          aggregateLikes,
+          readyInMinutes,
+          image,
+          title,
+          servings,
+          vegan,
+          vegetarian,
+          glutenFree,
+        };
+      }
 
       this.recipe = _recipe;
+      // this.checkIfFavorite();
     } catch (error) {
       console.log(error);
     }
-  }
-};
+  },};
 </script>
 
 <style scoped>

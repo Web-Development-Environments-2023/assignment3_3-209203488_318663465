@@ -14,13 +14,19 @@
             <li class="nav-item">
               <router-link :to="{ name: 'search' }" class="nav-link">Search</router-link>
             </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Personal              </a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a></div>
-            </li>
+            <b-nav-item-dropdown type="dark" variant="light" text="Personal">
+          <b-dropdown-item href="#" id="favorites">
+            <router-link :to="{ name: 'myfavoriterecipes' }">
+              My Favorite Recipes
+            </router-link>
+          </b-dropdown-item>
+          <b-dropdown-item id="myRecipes">
+            <router-link :to="{ name: 'myrecipes' }">My Recipes</router-link>
+          </b-dropdown-item>
+          <b-dropdown-item>
+            <router-link :to="{ name: 'myfamilyrecipes' }">My Family Recipes</router-link>
+          </b-dropdown-item>
+        </b-nav-item-dropdown>
           </ul>
 
           <ul class="navbar-nav ml-auto">

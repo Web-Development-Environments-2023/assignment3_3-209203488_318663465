@@ -1,4 +1,5 @@
 export default [
+  "",
   "Afghanistan",
   "Åland Islands",
   "Albania",

@@ -1,10 +1,10 @@
 <template>
   <router-link
-    :to="{ name: 'recipe', params: { recipeId: recipe.id } }"
+    :to="{ name: 'recipe', params: { recipeId: recipe.id, title: title }, }"
     class="recipe-preview"
   >
     <div class="recipe-body">
-      <img v-if="image_load" :src="recipe.image" class="recipe-image" />
+      <!-- <img  :src="recipe.image" class="recipe-image" /> -->
     </div>
     <div class="recipe-footer">
       <div :title="recipe.title" class="recipe-title">
@@ -12,7 +12,7 @@
       </div>
       <ul class="recipe-overview">
         <li>{{ recipe.readyInMinutes }} minutes</li>
-        <!-- <li>{{ recipe.aggregateLikes }} likes</li> -->
+        <li>{{ recipe.aggregateLikes }} likes</li>
       </ul>
     </div>
   </router-link>
@@ -21,15 +21,17 @@
 <script>
 export default {
   mounted() {
-    this.axios.defaults.withCredentials = true ;
-    this.axios.get(this.recipe.image).then((i) => {
-      this.image_load = true;
-    });
-    this.axios.defaults.withCredentials = false;
+  //   console.log("imaggggggeeeeeeeeeeeeeeeeeee")
+
+  //   this.axios.get(this.recipe.image).then((i) => {
+  //     console.log("imaggggggeeeeeeeeeeeeeeeeeee")
+
+  //     console.log(this.recipe.image)
+  //     this.image_load = true;
+  //   });
   },
   data() {
     return {
-      image_load: false
     };
   },
   props: {

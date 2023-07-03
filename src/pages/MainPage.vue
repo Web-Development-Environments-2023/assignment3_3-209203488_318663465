@@ -1,7 +1,5 @@
 <template>
   <div class="container">
-<!-- import LastViewd from "../components/LastViewd.vue";
-import Random from "../components/Random.vue"; -->
     <h1 class="title">Main Page</h1>
     <Random id="randomRecipes" title="Explore this recipes" class="RandomRecipes center"   @reload="this.reloadRecipes()"/>
     <router-link v-if="!$root.store.username" to="/login" tag="button">You need to Login to vue this</router-link>

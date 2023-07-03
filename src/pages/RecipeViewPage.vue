@@ -4,6 +4,26 @@
       <div class="recipe-header mt-3 mb-4">
         <h1>{{ recipe.title }}</h1>
         <img :src="recipe.image" class="center" />
+        <br>
+        <br>
+        <br>
+
+        <span v-if="$root.store.username">
+          <span v-if="!this.favorite">
+            <b-button @click="addToFavorite" variant="outline-dark">
+              <b-icon-star></b-icon-star>
+            </b-button>
+          </span>
+          <span v-else>
+            <b-button
+              @click="addToFavorite"
+              variant="outline-success"
+              :disabled="true"
+            >
+              <b-icon-star></b-icon-star>
+            </b-button>
+          </span>
+        </span>
       </div>
       <div class="recipe-body">
         <div class="wrapper">
@@ -42,18 +62,21 @@
 </template>
 
 <script>
+import { BIconStar } from 'bootstrap-vue'
+
 export default {
+  components: {
+    BIconStar
+  },
   data() {
     return {
-      recipe: null
+      recipe: null,
+      favorite: false,
     };
   },
   async created() {
     try {
       let response;
-      // response = this.$route.params.response;
-      console.log(this.$route.params.title);
-
       try {
         if (this.$route.params.title == "My Recipes") {
           response = await this.axios.get(
@@ -93,31 +116,32 @@ this.axios.defaults.withCredentials = false;
         console.log(response.data);
 
         let {
-            title,
-            imagedata,
-            readyInMinutes,
-            vegan,
-            vegetarian,
-            GFree,
-            extendedIngredients,
-            instructions,
-            numOfDish
-          } = response.data;
+    title,
+    image, // Add this line to retrieve the image value
+    readyInMinutes,
+    vegan,
+    vegetarian,
+    GFree,
+    extendedIngredients,
+    instructions,
+    numOfDish,
+    aggregateLikes
+  } = response.data;
 
-        let _instructions = instructions;
+  let _instructions = instructions;
 
-        _recipe = {
-          title,
-        imagedata,
-        readyInMinutes,
-        vegan,
-        vegetarian,
-        GFree,
-        extendedIngredients,
-        _instructions,
-        numOfDish
-        };
-
+  _recipe = {
+    title,
+    image, // Map the image value to recipe.image
+    readyInMinutes,
+    vegan,
+    vegetarian,
+    GFree,
+    extendedIngredients,
+    _instructions,
+    numOfDish,
+    aggregateLikes
+  };
       } else {
         console.log(response.data);
 
@@ -160,14 +184,68 @@ this.axios.defaults.withCredentials = false;
           vegetarian,
           glutenFree,
         };
-      }
+      this.checkIfFavorite();}
 
       this.recipe = _recipe;
-      // this.checkIfFavorite();
+      
     } catch (error) {
       console.log(error);
     }
-  },};
+    
+  },
+  methods: {
+    async addToFavorite() {
+      try {
+        this.axios.defaults.withCredentials = true ;
+        const response = await this.axios.post(
+          this.$root.store.server_domain + "/users/favorites",
+          {
+            recipeId: this.$route.params.recipeId,
+          }
+        );
+        this.axios.defaults.withCredentials = false ;
+        console.log(response.data)
+        this.favorite = true;
+      } catch (err) {
+        console.log(err.response);
+        this.form.submitError = err.response.data.message;
+      }
+    },
+
+    async checkIfFavorite() {
+      const recipe = { recipeId: this.$route.params.recipeId };
+      let response;
+
+      try {
+        response = await this.axios.get(
+          this.$root.store.server_domain +
+            "/users/favorites" ,
+            { withCredentials: true }
+        );
+
+        if (response != undefined) {
+          for(let i=0;i<response.data.length;i++){
+            if(response.data[i].id == recipe.recipeId){
+              this.favorite = true
+              break;
+
+            }else{
+              continue;
+            }
+          }
+        }
+        if(response==undefined){
+          this.favorite=false;
+        }
+
+        console.log(response);
+      } catch (err) {
+        console.log(err.response);
+        // this.form.submitError = err.response.data.message;
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>

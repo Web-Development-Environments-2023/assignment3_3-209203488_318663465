@@ -69,11 +69,28 @@ export default {
 
 <style scoped>
 .recipe-preview {
-  display: inline-block;
-  width: 90%;
-  height: 100%;
-  position: relative;
-  margin: 10px 10px;
+  text-align: left;
+    box-shadow: none;
+    border: none;
+    transition: box-shadow ease .15s;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 0;
+    margin-bottom: 0.625rem;
+    font-size: 1.125rem;
+    text-align: center;
+    text-decoration: none;
+    color: #222;
+    background: #fff;
+    font-size: 1rem;
+    border: 1px solid #eee;
+    box-shadow: 1px 1px 6px 0 rgba(0,0,0,.09);
+    transition: all .25s ease;
+}
+* {
+    box-sizing: border-box;
 }
 .recipe-preview > .recipe-body {
   width: 100%;

@@ -1,71 +1,71 @@
 <template>
   <div class="container">
-    <h1 class="title">Search Page</h1>
+    <div class="search-query-box">
+      <h1 class="title">Search Page</h1>
 
-    <div class="search-filters">
-      <div>
-        <span>Amount</span>
-        <b-form-select v-model="searchAmount" :options="searchAmountOptions"></b-form-select>
+      <div class="search-query">
+        <b-input-group prepend="Search Query:" id="search-input">
+          <b-form-input v-model="searchQuery"></b-form-input>
+          <b-input-group-append>
+            <b-button type="submit" @click="Search" variant="success">Search</b-button>
+          </b-input-group-append>
+        </b-input-group>
       </div>
-      <div>
-        <span>Cuisine</span>
-        <b-form-select v-model="searchCuisine" :options="searchCuisineOptions"></b-form-select>
-      </div>
-      <div>
-        <span>Diet</span>
-        <b-form-select v-model="searchDiet" :options="searchDietOptions"></b-form-select>
-      </div>
-      <div>
-        <span>Intolerances</span>
-        <b-form-select v-model="searchIntolerances" :options="searchIntolerancesOptions"></b-form-select>
+
+      <div class="search-filters">
+        <div>
+          <span>Amount</span>
+          <b-form-select v-model="searchAmount" :options="searchAmountOptions"></b-form-select>
+        </div>
+        <div>
+          <span>Cuisine</span>
+          <b-form-select v-model="searchCuisine" :options="searchCuisineOptions"></b-form-select>
+        </div>
+        <div>
+          <span>Diet</span>
+          <b-form-select v-model="searchDiet" :options="searchDietOptions"></b-form-select>
+        </div>
+        <div>
+          <span>Intolerances</span>
+          <b-form-select v-model="searchIntolerances" :options="searchIntolerancesOptions"></b-form-select>
+        </div>
       </div>
     </div>
 
-    <b-input-group prepend="Search Query:" id="search-input">
-      <b-form-input v-model="searchQuery"></b-form-input>
-      <b-input-group-append>
-        <b-button type="submit" @click="Search" variant="success">Search</b-button>
+    <div class="search-results-box">
+      <h2 v-if="!searchResult.length" class="description-text">
+        <span v-if="!searched">Please search for recipes to show results</span>
+        <span v-if="searched">No results were found</span>
+      </h2>
 
-        <br>
-
-      </b-input-group-append>
-
-    </b-input-group>
-
-
-    <h2 v-if="!searchResult.length" class="description-text">
-      <span v-if="!searched"> Please search for recipes to show results </span>
-      <span v-if="searched"> No Results were found </span>
-    </h2>
-
-    <div class="search-result">
-      <div class="search-result-item" v-for="r in searchResult" :key="r.id">
-        <RecipePreview class="recipePreview" :recipe="r"/>
+      <div v-if="searchResult.length">
+        <h2 class="result-title">Search Results</h2>
+        <div class="search-result">
+          <div class="search-result-item" v-for="r in searchResult" :key="r.id">
+            <RecipePreview class="recipePreview" :recipe="r"/>
+          </div>
+        </div>
       </div>
 
+      <!-- Loading indicator -->
+      <div v-if="loading" class="loading-indicator">
+        <div class="spinner"></div>
+        <span>Loading...</span>
+      </div>
     </div>
-
-    <div class="result_container"></div>
-    <!-- Loading indicator -->
-  <!-- <div v-if="loading" class="loading-indicator">
-    <div class="spinner"></div>
-    <span>Loading...</span>
-  </div> -->
-
   </div>
-  
 </template>
+
 <script>
+import RecipePreview from "../components/RecipePreview.vue";
 
-  import RecipePreview from "../components/RecipePreview.vue";
-
-  export default {
-    components: {
-      RecipePreview
-    },
-    name: "search",
-    data() {
-      return {
+export default {
+  components: {
+    RecipePreview
+  },
+  name: "search",
+  data() {
+    return {
         searched: false,
         searchAmountOptions: [
           {value: 5, text: "5"},
@@ -146,87 +146,116 @@
         searchResult: []
       };
     },
-    methods: {
-      async Search() {
-        try{
-          this.loading = true; // Set loading to true
+  methods: {
+    async Search() {
+      try {
+        this.loading = true; // Set loading to true
 
-        const response = await this.axios.post('http://localhost:3000/recipes/search', {
-      query: this.searchQuery,
-      cuisine: this.searchCuisine,
-      diet: this.searchDiet,
-      intolerances: this.searchIntolerances,
-      number: this.searchAmount
-    });
-    this.searchResult = response.data;
-    console.log(this.searchResult);
-    this.searched = true;
-  } catch (error) {
-    console.error(error);
-  }
-    finally {
-      this.loading = false; // Set loading back to false
-    }
-        // this.searchResult = recipe.data;
-        // console.log(this.searchResult);
-        // this.searched = true;
+        const response = await this.axios.post("http://localhost:3000/recipes/search", {
+          query: this.searchQuery,
+          cuisine: this.searchCuisine,
+          diet: this.searchDiet,
+          intolerances: this.searchIntolerances,
+          number: this.searchAmount
+        });
+        this.searchResult = response.data;
+        this.searched = true;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loading = false; // Set loading back to false
       }
-    },
+    }
   }
+};
 </script>
-<style>
-  .search-result {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding-top: 1em;
-  }
 
-  .search-result-item {
-    max-width: 400px;
-  }
+<style scoped>
+.container {
+  max-width: 2200px;
+  margin: 50px auto; /* Adjust the margin value */
+  padding: 40px;
+  background-color: #ecf5f9; /* Light blue background */
+}
 
-  .search-filters {
-    display: flex;
-    padding: 10px 0;
-  }
+.search-query-box {
+  margin-bottom: 40px;
+}
 
-  .search-filters div{
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    padding-left: 8px;
-    vertical-align: center;
-  }
-  .search-filters span{
-    align-self: center;
-    padding-right: 6px;
-  }
+.search-results-box {
+  margin-top: 40px;
+}
 
-  .description-text{
-    text-align: center;
-    padding: 1em;
-    color: #5f5f5f;
-  }
+.title {
+  color: #3498db;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
 
-  .loading-indicator {
+.search-query {
+  margin-bottom: 20px;
+}
+
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.search-filters > div {
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
+.search-filters span {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+#search-input {
+  margin-bottom: 20px;
+}
+
+.description-text {
+  color: #888888;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.search-result {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 20px;
+}
+
+.result-title {
+  color: #3498db;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.loading-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100px;
+  margin-top: 40px;
 }
 
 .spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3498db;
+  border: 4px solid #f3f3f3; /* Light gray spinner border */
+  border-top: 4px solid #3498db; /* Blue spinner border */
   border-radius: 50%;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

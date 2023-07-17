@@ -1,52 +1,41 @@
 <template>
   <div class="container">
     <div v-if="recipe">
-      <div class="recipe-header mt-3 mb-4">
+      <div class="recipe-header">
         <h1>{{ recipe.title }}</h1>
-        <img :src="recipe.image" class="center" />
-        <br>
-        <br>
-        <br>
-        <span v-if="$root.store.username">
-          <span v-if="!favorite">
-            <b-button @click="addToFavorite" variant="outline-dark">
-              <b-icon-star></b-icon-star>
-            </b-button>
-          </span>
-          <span v-else>
-            <b-button
-              @click="addToFavorite"
-              variant="outline-success"
-              :disabled="true"
-            >
-              <b-icon-star></b-icon-star>
-            </b-button>
-          </span>
-        </span>
+        <img :src="recipe.image" class="recipe-image" />
+        <div class="favorite-section" v-if="!isMyRecipes && !isMyFamilyRecipes">
+          <b-button @click="addToFavorite" variant="outline-dark" :disabled="favorite">
+            <b-icon-star></b-icon-star>
+            <span class="feedback-text" :class="{ 'enabled': !favorite, 'disabled': favorite }">
+              {{ favorite ? 'Added to Favorites' : 'Add to Favorites' }}
+            </span>
+          </b-button>
+        </div>
       </div>
       <div class="recipe-body">
-        <div class="wrapper">
-          <div class="wrapped">
-            <div class="mb-3">
-              <div>Ready in {{ recipe.readyInMinutes }} minutes</div>
-              <div>Likes: {{ recipe.aggregateLikes }} likes</div>
-            </div>
-            Ingredients:
-            <ul>
-              <li v-for="(r, index) in recipe.extendedIngredients" :key="index + '_' + r.id">
-                {{ r.original }}
-              </li>
-            </ul>
+        <div class="recipe-details">
+          <div class="detail-row">
+            <div class="detail-label">Ready in:</div>
+            <div class="detail-value">{{ recipe.readyInMinutes }} minutes</div>
           </div>
-          <div class="wrapped">
-            Instructions:
-            <ol>
-              <li v-for="s in recipe._instructions" :key="s.number">
-                {{ s.step }}
-              </li>
-            </ol>
+          <div class="detail-row">
+            <div class="detail-label">Likes:</div>
+            <div class="detail-value">{{ recipe.aggregateLikes }} likes</div>
           </div>
         </div>
+        <div class="section-heading">Ingredients:</div>
+        <ul class="ingredient-list">
+          <li v-for="(r, index) in recipe.extendedIngredients" :key="index + '_' + r.id">
+            {{ r.original }}
+          </li>
+        </ul>
+        <div class="section-heading">Instructions:</div>
+        <ol class="instruction-list">
+          <li v-for="s in recipe._instructions" :key="s.number">
+            {{ s.step }}
+          </li>
+        </ol>
       </div>
     </div>
   </div>
@@ -62,18 +51,22 @@ export default {
   data() {
     return {
       recipe: null,
-      favorite: false
+      favorite: false,
+      isMyRecipes: false,
+      isMyFamilyRecipes: false
     };
   },
   async created() {
     try {
       let response;
       if (this.$route.params.title === "My Recipes") {
+        this.isMyRecipes = true;
         response = await this.axios.get(
           this.$root.store.server_domain + "/recipes/myFullDetailes?recipeid=" + this.$route.params.recipeId,
           { withCredentials: true }
         );
       } else if(this.$route.params.title === "My Family Recipes"){
+        this.isMyFamilyRecipes = true;
         response = await this.axios.get(
           this.$root.store.server_domain + "/recipes/myFamilyFullDetailes?recipeid=" + this.$route.params.recipeId,
           { withCredentials: true }
@@ -100,7 +93,7 @@ export default {
 
       let _recipe;
 
-      if (this.$route.params.title === "My Recipes") {
+      if (this.isMyRecipes) {
         console.log("in my rec")
         let {
           title,
@@ -129,7 +122,7 @@ export default {
           numOfDish,
           aggregateLikes
         };
-      } else if (this.$route.params.title === "My Family Recipes") {
+      } else if (this.isMyFamilyRecipes) {
         console.log("in my fem")
 
         let {
@@ -249,18 +242,98 @@ export default {
 </script>
 
 <style scoped>
-.wrapper {
-  display: flex;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.wrapped {
-  width: 50%;
+.recipe-header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.center {
+.recipe-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.recipe-image {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+.favorite-section {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.feedback-text {
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #888;
+}
+
+.enabled {
+  color: green;
+}
+
+.disabled {
+  color: red;
+}
+
+.recipe-body {
+  margin-top: 30px;
+}
+
+.recipe-details {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.detail-label {
+  flex: 0 0 120px;
+  font-weight: bold;
+  color: #333;
+}
+
+.detail-value {
+  flex: 1;
+  color: #555;
+}
+
+.section-heading {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.ingredient-list,
+.instruction-list {
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.ingredient-item {
+  color: #555;
+}
+
+.instruction-list li {
+  margin-bottom: 10px;
+}
+
+.instruction-step {
+  color: #555;
 }
 </style>

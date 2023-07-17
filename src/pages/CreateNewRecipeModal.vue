@@ -447,4 +447,99 @@ console.log(this.form.popularity)
 </script>
 
 <style scoped>
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f7f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.b-form-group {
+  margin-bottom: 20px;
+}
+
+.b-form-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.b-form-input {
+  border-color: #ddd;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.b-form-invalid-feedback {
+  color: #dc3545;
+}
+
+.b-form-checkbox .form-check-label {
+  color: #333;
+}
+
+.b-button-toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.b-button-group {
+  display: flex;
+}
+
+.b-button-group .btn {
+  padding: 5px 10px;
+}
+
+.b-button-toolbar .btn {
+  font-size: 14px;
+}
+
+.b-button-group .btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.b-button-toolbar .btn:not(:last-child) {
+  margin-right: 5px;
+}
+
+.b-button-toolbar .btn:last-child {
+  margin-left: 5px;
+}
+
+.b-button-toolbar .btn-title {
+  margin-left: 5px;
+}
+
+.b-button-toolbar .btn svg {
+  fill: #007bff;
+}
+
+.b-button-toolbar .btn[disabled] svg {
+  fill: #ccc;
+}
+
+.b-button-toolbar .btn[disabled] .btn-title {
+  color: #ccc;
+}
+.b-form-checkbox .custom-control-label::before {
+  width: 18px;
+  height: 18px;
+}
+
+.b-form-checkbox .custom-control-label::after {
+  width: 10px;
+  height: 10px;
+  top: 4px;
+  left: 4px;
+}
 </style>

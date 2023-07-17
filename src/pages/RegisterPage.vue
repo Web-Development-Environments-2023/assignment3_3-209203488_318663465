@@ -301,6 +301,41 @@ export default {
 </script>
 <style lang="scss" scoped>
 .container {
-  max-width: 500px;
+  max-width: 880px;
+  margin: 50px auto; /* Adjust the margin value */
+  padding: 40px;
+  background-color: #f4f7f9; /* Light blue background */
+}
+
+.title {
+  color: #3498db;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.register-button {
+  width: 100%;
+  padding: 12px;
+  margin: 20px 0;
+  border: none;
+  border-radius: 4px;
+  background-color: #3498db;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.register-button:hover {
+  background-color: #2980b9;
+}
+
+.mt-2 {
+  margin-top: 10px;
+}
+
+a {
+  color: #3498db;
 }
 </style>

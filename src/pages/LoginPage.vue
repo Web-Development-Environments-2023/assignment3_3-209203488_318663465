@@ -142,8 +142,32 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .container {
-  max-width: 400px;
+  max-width: 880px;
+  margin: 50px auto; /* Adjust the margin value */
+  padding: 40px;
+  background-color: #f4f7f9;
+}
+
+.title {
+  color: #3498db;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.login-button {
+  width: 100px;
+  display: block;
+  margin: 20px auto;
+}
+
+.mt-2 {
+  margin-top: 10px;
+}
+
+a {
+  color: #3498db;
 }
 </style>

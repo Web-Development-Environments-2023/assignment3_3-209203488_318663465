@@ -93,53 +93,103 @@ export default {
 };
 </script>
 
-<style lang="scss">
-@import "@/scss/form-style.scss";
 
-#app {
-  font-family: Cursive,  Fantasy;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: DarkSeaGreen;
-  color: #2c3e50;
-  min-height: 100vh;
-  background: #FFE7E0;
-}
 
-#nav {
-  padding: 50px;
-  margin-left: 100px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-  margin-left: 600px;
-  padding: 50px;
+<style scoped>
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f7f9;
 }
 
 .navbar {
-  margin-left: 30px;
-  margin-bottom: 50px;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index:1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #b3d1f3;
+  color: #ffffff;
 }
 
-.navbar a {
+.navbar-brand {
+  font-size: 24px;
   font-weight: bold;
-  font-size: 25px;
-  background-color: DarkSeaGreen;
-  text-align: center;
-  padding: 10px 120px;
+  margin-right: 20px;
 }
 
-.navbar a :hover {
-  background: #dddddd;
-  color: #333333;
+.navbar-links {
+  display: flex;
+  align-items: center;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+.navbar-link {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
+  margin-right: 20px;
+  transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.navbar-dropdown {
+  position: relative;
+}
+
+.navbar-dropdown-toggle {
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-right: 20px;
+  transition: color 0.3s ease;
+}
+
+.navbar-dropdown-toggle:hover {
+  color: #2c3e50;
+}
+
+.navbar-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 200px;
+  padding: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+.navbar-dropdown:hover .navbar-dropdown-menu {
+  display: block;
+}
+
+.navbar-dropdown-item {
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-dropdown-item:hover {
+  background-color: #f2f2f2;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-username {
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 20px;
 }
 </style>

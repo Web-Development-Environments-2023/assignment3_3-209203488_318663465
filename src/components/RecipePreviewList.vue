@@ -44,8 +44,56 @@ export default {
 
 </script>
 
-<style lang="scss" scoped>
-.container {
-  min-height: 400px;
+<style scoped>
+.title {
+  color: #3498db;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.recipePreview {
+  border: 1px solid #3498db;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.recipePreview h4 {
+  color: #3498db;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.recipePreview p {
+  color: #555555;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.recipePreview button {
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.recipePreview button:hover {
+  background-color: #2980b9;
+}
+
+.recipePreview button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.recipePreview button:active {
+  background-color: #2980b9;
+  box-shadow: none;
+}
+
+.recipePreview .tags {
+  color: #777777;
+  font-size: 12px;
 }
 </style>

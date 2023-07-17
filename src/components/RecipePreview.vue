@@ -4,20 +4,19 @@
     class="recipe-preview"
   >
     <div class="recipe-body">
-      <!-- <img  :src="recipe.image" class="recipe-image" /> -->
+      <img :src="recipe.image" class="recipe-image" />
     </div>
     <div class="recipe-footer">
       <div :title="recipe.title" class="recipe-title">
         {{ recipe.title }}
       </div>
       <ul class="recipe-overview">
-        <li>{{ recipe.readyInMinutes }} minutes</li>
-        <li>{{ recipe.aggregateLikes }} likes</li>
+        <li v-if="recipe.readyInMinutes !== undefined">{{ recipe.readyInMinutes }} minutes</li>
+        <li v-if="recipe.aggregateLikes !== undefined">{{ recipe.aggregateLikes }} likes</li>
       </ul>
     </div>
   </router-link>
 </template>
-
 <script>
 export default {
   mounted() {
@@ -66,32 +65,29 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .recipe-preview {
   text-align: left;
-    box-shadow: none;
-    border: none;
-    transition: box-shadow ease .15s;
-    margin-bottom: 0;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    top: 0;
-    margin-bottom: 0.625rem;
-    font-size: 1.125rem;
-    text-align: center;
-    text-decoration: none;
-    color: #222;
-    background: #fff;
-    font-size: 1rem;
-    border: 1px solid #eee;
-    box-shadow: 1px 1px 6px 0 rgba(0,0,0,.09);
-    transition: all .25s ease;
+  box-shadow: none;
+  border: none;
+  transition: box-shadow ease .15s;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  margin-bottom: 0.625rem;
+  font-size: 1.125rem;
+  text-align: center;
+  text-decoration: none;
+  color: #222;
+  background: #f4f7f9; /* Light blue background */
+  font-size: 1rem;
+  border: 1px solid #eee;
+  box-shadow: 1px 1px 6px 0 rgba(0,0,0,.09);
+  transition: all .25s ease;
 }
-* {
-    box-sizing: border-box;
-}
+
 .recipe-preview > .recipe-body {
   width: 100%;
   height: 200px;
@@ -99,16 +95,11 @@ export default {
 }
 
 .recipe-preview .recipe-body .recipe-image {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  margin-bottom: auto;
+  margin: 0;
   display: block;
-  width: 98%;
-  height: auto;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  background-size: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .recipe-preview .recipe-footer {
@@ -118,45 +109,28 @@ export default {
 }
 
 .recipe-preview .recipe-footer .recipe-title {
-  padding: 10px 10px;
+  padding: 10px;
   width: 100%;
   font-size: 12pt;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
-  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
 }
 
 .recipe-preview .recipe-footer ul.recipe-overview {
-  padding: 5px 10px;
+  padding: 5px;
   width: 100%;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  -o-box-flex: 1;
-  box-flex: 1;
-  -webkit-flex: 1 auto;
-  -ms-flex: 1 auto;
-  flex: 1 auto;
-  table-layout: fixed;
-  margin-bottom: 0px;
+  justify-content: space-around;
+  margin-bottom: 0;
 }
 
 .recipe-preview .recipe-footer ul.recipe-overview li {
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  -o-box-flex: 1;
-  -ms-box-flex: 1;
-  box-flex: 1;
-  -webkit-flex-grow: 1;
   flex-grow: 1;
   width: 90px;
-  display: table-cell;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

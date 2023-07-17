@@ -47,10 +47,10 @@
 
     <div class="result_container"></div>
     <!-- Loading indicator -->
-  <div v-if="loading" class="loading-indicator">
+  <!-- <div v-if="loading" class="loading-indicator">
     <div class="spinner"></div>
     <span>Loading...</span>
-  </div>
+  </div> -->
 
   </div>
   
@@ -63,7 +63,7 @@
     components: {
       RecipePreview
     },
-    name: "SearchPage",
+    name: "search",
     data() {
       return {
         searched: false,

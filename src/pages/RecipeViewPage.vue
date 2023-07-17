@@ -7,9 +7,8 @@
         <br>
         <br>
         <br>
-
         <span v-if="$root.store.username">
-          <span v-if="!this.favorite">
+          <span v-if="!favorite">
             <b-button @click="addToFavorite" variant="outline-dark">
               <b-icon-star></b-icon-star>
             </b-button>
@@ -34,10 +33,7 @@
             </div>
             Ingredients:
             <ul>
-              <li
-                v-for="(r, index) in recipe.extendedIngredients"
-                :key="index + '_' + r.id"
-              >
+              <li v-for="(r, index) in recipe.extendedIngredients" :key="index + '_' + r.id">
                 {{ r.original }}
               </li>
             </ul>
@@ -52,11 +48,6 @@
           </div>
         </div>
       </div>
-      <!-- <pre>
-      {{ $route.params }}
-      {{ recipe }}
-    </pre
-      > -->
     </div>
   </div>
 </template>
@@ -71,79 +62,97 @@ export default {
   data() {
     return {
       recipe: null,
-      favorite: false,
+      favorite: false
     };
   },
   async created() {
     try {
       let response;
-      try {
-        if (this.$route.params.title == "My Recipes") {
-          response = await this.axios.get(
-            // "https://test-for-3-2.herokuapp.com/recipes/info",
-            this.$root.store.server_domain +
-              "/recipes/myFullDetailes?recipeid=" +
-              this.$route.params.recipeId,
-            { withCredentials: true }
-          );
-        } else {
-          this.axios.defaults.withCredentials = true ;
+      if (this.$route.params.title === "My Recipes") {
+        response = await this.axios.get(
+          this.$root.store.server_domain + "/recipes/myFullDetailes?recipeid=" + this.$route.params.recipeId,
+          { withCredentials: true }
+        );
+      } else if(this.$route.params.title === "My Family Recipes"){
+        response = await this.axios.get(
+          this.$root.store.server_domain + "/recipes/myFamilyFullDetailes?recipeid=" + this.$route.params.recipeId,
+          { withCredentials: true }
+        );
+        console.log(response.data);
 
-response = await this.axios.get(
-  // "https://test-for-3-2.herokuapp.com/recipes/info",
-  "http://localhost:3000/recipes/" +this.$route.params.recipeId,
-  // this.$root.store.server_domain + "/recipes/info",
-
-  {
-    params: { id: this.$route.params.recipeId }
-  }
-);
-this.axios.defaults.withCredentials = false;
-
-}
-
-        // console.log("response.status", response.status);
-        if (response.status !== 200) this.$router.replace("/NotFound");
-      } catch (error) {
-        console.log("error.response.status", error.response.status);
+      }
+      
+      else {
+        this.axios.defaults.withCredentials = true;
+        response = await this.axios.get(
+          "http://localhost:3000/recipes/" + this.$route.params.recipeId,
+          {
+            params: { id: this.$route.params.recipeId }
+          }
+        );
+        this.axios.defaults.withCredentials = false;
+      }
+      
+      if (response.status !== 200) {
         this.$router.replace("/NotFound");
         return;
       }
 
       let _recipe;
 
-      if (this.$route.params.title == "My Recipes") {
-        console.log(response.data);
+      if (this.$route.params.title === "My Recipes") {
+        console.log("in my rec")
+        let {
+          title,
+          image,
+          readyInMinutes,
+          vegan,
+          vegetarian,
+          GFree,
+          extendedIngredients,
+          instructions,
+          numOfDish,
+          aggregateLikes
+        } = response.data;
+
+        let _instructions = instructions;
+
+        _recipe = {
+          title,
+          image,
+          readyInMinutes,
+          vegan,
+          vegetarian,
+          GFree,
+          extendedIngredients,
+          _instructions,
+          numOfDish,
+          aggregateLikes
+        };
+      } else if (this.$route.params.title === "My Family Recipes") {
+        console.log("in my fem")
 
         let {
-    title,
-    image, // Add this line to retrieve the image value
-    readyInMinutes,
-    vegan,
-    vegetarian,
-    GFree,
-    extendedIngredients,
-    instructions,
-    numOfDish,
-    aggregateLikes
-  } = response.data;
+          title,
+          image,
+          Author,
+          extendedIngredients,
+          instructions,
+          Preparation_Time
+        } = response.data;
 
-  let _instructions = instructions;
+        let _instructions = instructions;
 
-  _recipe = {
-    title,
-    image, // Map the image value to recipe.image
-    readyInMinutes,
-    vegan,
-    vegetarian,
-    GFree,
-    extendedIngredients,
-    _instructions,
-    numOfDish,
-    aggregateLikes
-  };
+        _recipe = {
+          title,
+          image,
+          Author,
+          extendedIngredients,
+          _instructions,
+          Preparation_Time
+        };
       } else {
-        console.log(response.data);
+        console.log("in general")
 
         let {
           analyzedInstructions,
@@ -156,10 +165,8 @@ this.axios.defaults.withCredentials = false;
           servings,
           vegan,
           vegetarian,
-          glutenFree,
+          glutenFree
         } = response.data;
-
-        console.log(analyzedInstructions);
 
         let _instructions = analyzedInstructions
           .map((fstep) => {
@@ -167,8 +174,6 @@ this.axios.defaults.withCredentials = false;
             return fstep.steps;
           })
           .reduce((a, b) => [...a, ...b], []);
-
-        console.log(_instructions);
 
         _recipe = {
           instructions,
@@ -184,27 +189,27 @@ this.axios.defaults.withCredentials = false;
           vegetarian,
           glutenFree,
         };
-      this.checkIfFavorite();}
+
+        this.checkIfFavorite();
+      }
 
       this.recipe = _recipe;
-      
     } catch (error) {
       console.log(error);
     }
-    
   },
   methods: {
     async addToFavorite() {
       try {
-        this.axios.defaults.withCredentials = true ;
+        this.axios.defaults.withCredentials = true;
         const response = await this.axios.post(
           this.$root.store.server_domain + "/users/favorites",
           {
             recipeId: this.$route.params.recipeId,
           }
         );
-        this.axios.defaults.withCredentials = false ;
-        console.log(response.data)
+        this.axios.defaults.withCredentials = false;
+        console.log(response.data);
         this.favorite = true;
       } catch (err) {
         console.log(err.response);
@@ -214,34 +219,29 @@ this.axios.defaults.withCredentials = false;
 
     async checkIfFavorite() {
       const recipe = { recipeId: this.$route.params.recipeId };
-      let response;
-
       try {
-        response = await this.axios.get(
-          this.$root.store.server_domain +
-            "/users/favorites" ,
-            { withCredentials: true }
+        const response = await this.axios.get(
+          this.$root.store.server_domain + "/users/favorites",
+          { withCredentials: true }
         );
 
         if (response != undefined) {
-          for(let i=0;i<response.data.length;i++){
-            if(response.data[i].id == recipe.recipeId){
-              this.favorite = true
+          for (let i = 0; i < response.data.length; i++) {
+            if (response.data[i].id === recipe.recipeId) {
+              this.favorite = true;
               break;
-
-            }else{
+            } else {
               continue;
             }
           }
         }
-        if(response==undefined){
-          this.favorite=false;
+        if (response == undefined) {
+          this.favorite = false;
         }
 
         console.log(response);
       } catch (err) {
         console.log(err.response);
-        // this.form.submitError = err.response.data.message;
       }
     },
   },
@@ -252,16 +252,15 @@ this.axios.defaults.withCredentials = false;
 .wrapper {
   display: flex;
 }
+
 .wrapped {
   width: 50%;
 }
+
 .center {
   display: block;
   margin-left: auto;
   margin-right: auto;
   width: 50%;
 }
-/* .recipe-header{
-
-} */
 </style>

@@ -1,20 +1,34 @@
+
 <template>
-  <div id="app">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <!-- <div class="container-fluid"> -->
-        <a class="navbar-brand" href="#">L&T Recipes</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <router-link :to="{ name: 'main' }" class="nav-link">Main</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link :to="{ name: 'search' }" class="nav-link">Search</router-link>
-            </li>
-            <b-nav-item-dropdown type="dark" variant="light" text="Personal">
+  <div id="app"
+
+
+  >
+    <!-- <NavigationBar :logout="Logout"></NavigationBar> -->
+
+    <!-- https://bootstrap-vue.org/docs/components/navbar#color-schemes -->
+    <!-- <link rel="stylesheet" href='/static/back.css'><link/> -->
+    <b-navbar>
+      <b-navbar-nav>
+        <b-nav-item href="#">
+          <router-link :to="{ name: 'main' }">Main</router-link>
+        </b-nav-item>
+        <b-nav-item>
+          <router-link :to="{ name: 'search' }">Search</router-link>
+        </b-nav-item>
+         <!-- <b-nav-item href="#">
+          <router-link :to="{ name: 'about' }">
+          About
+          </router-link>
+        </b-nav-item> -->
+      </b-navbar-nav>
+
+      <b-navbar-nav v-if="$root.store.username" id="loggedInUser">
+        <b-nav-item>
+          <router-link :to="{ name: 'createNewRecipeModal' }">Create New Recipe</router-link>
+        </b-nav-item>
+
+        <b-nav-item-dropdown type="dark" variant="light" text="Personal">
           <b-dropdown-item href="#" id="favorites">
             <router-link :to="{ name: 'myfavoriterecipes' }">
               My Favorite Recipes
@@ -24,46 +38,33 @@
             <router-link :to="{ name: 'myrecipes' }">My Recipes</router-link>
           </b-dropdown-item>
           <b-dropdown-item>
-            <router-link :to="{ name: 'myfamilyrecipes' }">My Family Recipes</router-link>
+            <router-link :to="{ name: 'MyFamily' }">My Family Recipes</router-link>
           </b-dropdown-item>
         </b-nav-item-dropdown>
-          </ul>
 
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <span class="navbar-text" v-if="!$root.store.username">
-                Guest:
-              </span>
-            </li>
-            <li class="nav-item" v-if="!$root.store.username">
-              <a class="nav-link" href="#">
-                <router-link :to="{ name: 'register' }">Register</router-link>
-              </a>
-            </li>
-            <li class="nav-item" v-if="!$root.store.username">
-              <a class="nav-link" href="#">
-                <router-link :to="{ name: 'login' }">Login</router-link>
-              </a>
-            </li>
-            
-            <li class="nav-item" v-if="$root.store.username">
-              <span class="navbar-text">
-                {{ $root.store.username }}:
-              </span>
-            </li>
-            <li class="nav-item" v-if="$root.store.username">
-              <a class="nav-link" href="#">
-                <button @click="Logout" class="btn btn-link">Logout</button>
-              </a>
-            </li>
-          </ul>
-        </div>
-      <!-- </div> -->
-    </nav>
+        <b-nav-item>
+            Hello {{ $root.store.username }}
+        </b-nav-item>
+        <b-nav-item @click="Logout">
+            Logout
+        </b-nav-item>
+      </b-navbar-nav>
+
+      <b-navbar-nav v-else>
+        <b-nav-item>
+            Hello Guest            
+        </b-nav-item>
+        <b-nav-item>
+            <router-link :to="{ name: 'register' }">Register</router-link>
+        </b-nav-item>
+        <b-nav-item>
+            <router-link :to="{ name: 'login' }">Login</router-link>
+        </b-nav-item>
+      </b-navbar-nav>
+    </b-navbar>
     <router-view />
   </div>
 </template>
-
 
 
 <script>
@@ -71,15 +72,24 @@
 export default {
   name: "App",
   methods: {
-    Logout() {
-      this.$root.store.logout();
-      this.$root.toast("Logout", "User logged out successfully", "success");
-
-      this.$router.push("/").catch(() => {
-        this.$forceUpdate();
-      });
-    }
-  }
+    async Logout() {
+      try {
+        const response = await this.axios.post(
+          this.$root.store.server_domain + "/Logout"
+        );
+        this.$root.store.logout();
+        if (response.message == "logout succeeded") {
+          this.$root.toast("Logout", "User logged out successfully", "success");
+          this.$router.push("/").catch(() => {
+            this.$forceUpdate();
+          });
+        }
+      } catch (err) {
+        console.log(err.response);
+        this.form.submitError = err.response.data.message;
+      }
+    },
+  },
 };
 </script>
 
@@ -87,20 +97,46 @@ export default {
 @import "@/scss/form-style.scss";
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Cursive,  Fantasy;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: DarkSeaGreen;
   color: #2c3e50;
   min-height: 100vh;
+  background: #FFE7E0;
 }
 
 #nav {
-  padding: 30px;
+  padding: 50px;
+  margin-left: 100px;
 }
 
 #nav a {
   font-weight: bold;
   color: #2c3e50;
+  margin-left: 600px;
+  padding: 50px;
+}
+
+.navbar {
+  margin-left: 30px;
+  margin-bottom: 50px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index:1;
+}
+
+.navbar a {
+  font-weight: bold;
+  font-size: 25px;
+  background-color: DarkSeaGreen;
+  text-align: center;
+  padding: 10px 120px;
+}
+
+.navbar a :hover {
+  background: #dddddd;
+  color: #333333;
 }
 
 #nav a.router-link-exact-active {

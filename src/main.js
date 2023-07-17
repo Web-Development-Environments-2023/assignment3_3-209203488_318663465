@@ -50,7 +50,6 @@ import {
 Vue.use(Vuelidate);
 Vue.use(VueCookies);
 
-// axios.defaults.withCredentials=true
 
 axios.interceptors.request.use(
   function(config) {

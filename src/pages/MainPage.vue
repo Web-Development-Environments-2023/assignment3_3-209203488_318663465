@@ -1,45 +1,131 @@
 <template>
-  <div class="container">
-    <h1 class="title">Main Page</h1>
-    <RecipePreviewList title="Randome Recipes" class="RandomRecipes center" />
-    <router-link v-if="!$root.store.username" to="/login" tag="button">You need to Login to vue this</router-link>
-    {{ !$root.store.username }}
-    <RecipePreviewList
-      title="Last Viewed Recipes"
-      :class="{
-        RandomRecipes: true,
-        blur: !$root.store.username,
-        center: true
-      }"
-      disabled
-    ></RecipePreviewList>
-    <!-- <div
-      style="position: absolute;top: 70%;left: 50%;transform: translate(-50%, -50%);"
-    >
-      Centeredasdasdad
-    </div>-->
+  <div id="main"
+  >
+  <div class="main-container">
+
+  <div class="container" >
+    <div class="left-section">
+      <Random
+        id="randomRecipes"
+        title="Explore these recipes"
+        class="RandomRecipes center"
+        @reload="reloadRecipes"
+      />
+    </div>
+
+    <div class="right-section">
+      <!-- Conditionally render either LastViewd or Login page -->
+      <template v-if="$root.store.username">
+        <LastViewd
+          title="Last Viewed Recipes"
+          class="center"
+          :reload="reloadRecipes"
+          disabled
+        >
+        </LastViewd>
+      </template>
+      <template v-else>
+        <Login />
+         <!-- Include the Login.vue component here -->
+      </template>
+    </div>
   </div>
+</div>
+
+</div>
+
 </template>
 
 <script>
-import RecipePreviewList from "../components/RecipePreviewList";
+import Random from "../components/Random";
+import LastViewd from "../components/LastViewd";
+import Login from "../pages/LoginPage"; // Import the Login.vue component
+
 export default {
+  methods: {
+    reloadRecipes() {
+      // Emit the `reload` event
+      this.$emit('reload');
+    },
+    // ...
+  },
   components: {
-    RecipePreviewList
-  }
+    Random,
+    LastViewd,
+    Login
+},
 };
 </script>
+<style scoped>
+.main-container {
+  display: flex;
+  max-width: 2200px; /* Increase the max-width value */
+  background-image: url('../assets/r1.jpg');
+  height: 100vh; /* Set the height to 100% of the viewport height */
+  background-size: cover; /* Make the background image cover the entire container */
 
-<style lang="scss" scoped>
-.RandomRecipes {
-  margin: 10px 0 10px;
+
 }
+.container {
+  display: flex;
+  max-width: 2200px; /* Increase the max-width value */
+  margin: 50px auto 0; /* Add top margin */
+  padding: 40px; /* Increase the padding value */
+  /* background-color: #f4f7f9; */
+  height: 100vh; /* Set the height to 100% of the viewport height */
+
+
+}
+
+.left-section {
+  flex: 1; /* Take up all available space */
+  margin-right: 40px; /* Add larger right margin for separation */
+}
+
+.right-section {
+  flex: 1; /* Take up all available space */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-left: 40px; /* Add larger left margin for separation */
+}
+
+.RandomRecipes {
+  margin-bottom: 20px; /* Increase the margin value */
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .blur {
-  -webkit-filter: blur(5px); /* Safari 6.0 - 9.0 */
   filter: blur(2px);
 }
-::v-deep .blur .recipe-preview {
-  pointer-events: none;
-  cursor: default;
+
+/* Customize router-link button */
+.router-link-exact-active {
+  background-color: #3498db;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.router-link-exact-active:hover {
+  background-color: #2b85c7;
+}
+
+.router-link-exact-active:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.router-link-exact-active:active {
+  background-color: #3498db;
+  box-shadow: none;
 }
 </style>

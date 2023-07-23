@@ -41,6 +41,7 @@
         variant="primary"
         style="width:100px;display:block;"
         class="mx-auto w-100"
+        @click="onLogin()"
         >Login</b-button
       >
       <div class="mt-2">
@@ -64,6 +65,8 @@
 </template>
 
 <script>
+import axios from 'axios'; // Import the axios library
+
 import { required } from "vuelidate/lib/validators";
 export default {
   name: "Login",
@@ -93,10 +96,11 @@ export default {
     },
     async Login() {
       try {
-        
+        this.axios.defaults.withCredentials = true ;
+
         const response = await this.axios.post(
-          // "https://test-for-3-2.herokuapp.com/user/Login",
-          this.$root.store.server_domain +"/Login",
+          "https://liorkob.cs.bgu.ac.il/Login",
+          // this.$root.store.server_domain +"/Login",
           // "http://132.72.65.211:80/Login",
           // "http://132.73.84.100:80/Login",
 
@@ -104,16 +108,25 @@ export default {
             username: this.form.username,
             password: this.form.password
           }
+
         );
+        this.axios.defaults.withCredentials = false ;
+
         // console.log(response);
         // this.$root.loggedIn = true;
         console.log(this.$root.store.login);
         this.$root.store.login(this.form.username);
-        this.$router.push("/");
+        this.$router.push("/").catch(()=>{});
+
+        // this.$router.push("/");
       } catch (err) {
-        console.log(err.response);
-        this.form.submitError = err.response.data.message;
-      }
+  if (err.response && err.response.data && err.response.data.message) {
+    this.form.submitError = err.response.data.message;
+  } else {
+    console.log(err);
+    this.form.submitError = 'An error occurred during login.';
+  }
+}
     },
     onLogin() {
       // console.log("login method called");
@@ -129,8 +142,32 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .container {
-  max-width: 400px;
+  max-width: 880px;
+  margin: 50px auto; /* Adjust the margin value */
+  padding: 40px;
+  background-color: transparent;
+}
+
+.title {
+  color: #3498db;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.login-button {
+  width: 100px;
+  display: block;
+  margin: 20px auto;
+}
+
+.mt-2 {
+  margin-top: 10px;
+}
+
+a {
+  color: #3498db;
 }
 </style>

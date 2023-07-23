@@ -2,17 +2,27 @@ import Vue from "vue";
 import App from "./App.vue";
 import VueAxios from "vue-axios";
 import axios from "axios";
-
+import state from "./store";
 import routes from "./routes";
 import VueRouter from "vue-router";
+
 Vue.use(VueRouter);
 const router = new VueRouter({
   routes,
 });
 
+axios.defaults.withCredentials = true;
+import VueCookies from "vue-cookies";
+
 import Vuelidate from "vuelidate";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
+
+
 import {
   FormGroupPlugin,
   FormPlugin,
@@ -38,6 +48,8 @@ import {
   LayoutPlugin,
 ].forEach((x) => Vue.use(x));
 Vue.use(Vuelidate);
+Vue.use(VueCookies);
+
 
 axios.interceptors.request.use(
   function(config) {
@@ -68,6 +80,7 @@ Vue.config.productionTip = false;
 
 const shared_data = {
   username: localStorage.username,
+  server_domain: "https://liorkob.cs.bgu.ac.il:443",
   login(username) {
     localStorage.setItem("username", username);
     this.username = username;

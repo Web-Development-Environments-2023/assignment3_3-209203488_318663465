@@ -6,7 +6,8 @@
     </h3>
     <b-row>
       <b-col v-for="r in recipes" :key="r.id">
-        <RecipePreview class="recipePreview" :recipe="r" />
+        <RecipePreview class="recipePreview" :recipe="r" :title="title" :isMyRecipes="isMyRecipes" :isMyFamilyRecipes="isMyFamilyRecipes" />
+ />
       </b-col>
     </b-row>
   </b-container>
@@ -23,39 +24,85 @@ export default {
     title: {
       type: String,
       required: true
+    },
+    isMyRecipes: {
+      type: Boolean,
+      default: false
+    },
+    isMyFamilyRecipes: {
+      type: Boolean,
+      default: false
     }
+
   },
   data() {
     return {
       recipes: []
     };
   },
-  mounted() {
-    this.updateRecipes();
-  },
   methods: {
-    async updateRecipes() {
-      try {
-        const response = await this.axios.get(
-          this.$root.store.server_domain + "/recipes/random",
-          // "https://test-for-3-2.herokuapp.com/recipes/random"
-        );
-
-        // console.log(response);
-        const recipes = response.data.recipes;
-        this.recipes = [];
-        this.recipes.push(...recipes);
-        // console.log(this.recipes);
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    async update(recipes) {
+     
+        this.recipes = recipes
+        // console.log(this.recipes[0]);
+      
+    },
+   
   }
 };
+
 </script>
 
-<style lang="scss" scoped>
-.container {
-  min-height: 400px;
+<style scoped>
+.title {
+  color: #3498db;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.recipePreview {
+  /* border: 1px solid #3498db; */
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.recipePreview h4 {
+  color: #3498db;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.recipePreview p {
+  color: #555555;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.recipePreview button {
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.recipePreview button:hover {
+  background-color: #2980b9;
+}
+
+.recipePreview button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.recipePreview button:active {
+  background-color: #2980b9;
+  box-shadow: none;
+}
+
+.recipePreview .tags {
+  color: #777777;
+  font-size: 12px;
 }
 </style>

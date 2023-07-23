@@ -1,6 +1,6 @@
 <template>
     <div>
-        <RecipePreviewList title="My Recipes" ref="recipePreviewList" />
+        <RecipePreviewList title="My Recipes" :isMyRecipes="true"  ref="recipePreviewList" />
     
     </div>
       </template>
@@ -42,18 +42,18 @@
       
               const response = await this.axios.get(
                 // this.$root.store.server_domain + "/",
-                this.$root.store.server_domain +"/recipes/new",
+                "https://liorkob.cs.bgu.ac.il/recipes/new",
                 // this.$root.store.server_domain + "/",
       
               );
-      
+              this.axios.defaults.withCredentials = false ;
+
               console.log(response.data);
               const recipes = response.data;
               this.recipes = [];
               this.recipes.push(...recipes);
               this.$refs.recipePreviewList.update(recipes);
 
-              this.axios.defaults.withCredentials = false ;
 
             } catch (error) {
               console.log(error);

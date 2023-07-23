@@ -17,12 +17,14 @@
   };
   </script>
   
-<style lang="scss" scoped>
+<style scoped>
 .container {
   max-width: 2200px;
   margin: 50px auto; /* Adjust the margin value */
   padding: 40px;
-  background-color: #f4f7f9;
+  background-image: url('../assets/r1.jpg');
+  height: 100vh; /* Set the height to 100% of the viewport height */
+  background-size: cover; /* Make the background image cover the entire container */
 }
 
 .RandomRecipes {

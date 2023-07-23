@@ -42,7 +42,7 @@
       
               const response = await this.axios.get(
                 // this.$root.store.server_domain + "/",
-                this.$root.store.server_domain +"/users/favorites",
+                "https://liorkob.cs.bgu.ac.il/users/favorites",
                 // this.$root.store.server_domain + "/",
       
               );

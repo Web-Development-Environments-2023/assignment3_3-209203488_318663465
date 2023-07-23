@@ -32,15 +32,19 @@
         // Clean up the event listener when the component is destroyed
         this.$parent.$off('reload', this.updateLastSeenRecipes);
       },
-        methods: {
+      methods: {
           async updateLastSeenRecipes() {
             try {
+              this.axios.defaults.withCredentials = true;
+
               const response = await this.axios.get(
                
                 // this.$root.store.server_domain + "/last",
-                "http://localhost:3000/last"
+                "https://liorkob.cs.bgu.ac.il/last"
 
               );
+              this.axios.defaults.withCredentials = false;
+
               const recipes = [
                 response.data[0],
                 response.data[1],
@@ -52,7 +56,6 @@
                             this.recipes.push(recipes[i]);
   }
 }
-              console.log(this.recipes);
               this.$refs.recipePreviewList.update(this.recipes);
 
            
@@ -61,8 +64,7 @@
         }
       };
       
-      </script>
-      
+      </script>      
       <style lang="scss" scoped>
       .container {
         min-height: 400px;

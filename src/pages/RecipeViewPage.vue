@@ -4,7 +4,7 @@
       <div class="recipe-header">
         <h1>{{ recipe.title }}</h1>
         <img :src="recipe.image" class="recipe-image" />
-        <div class="favorite-section" v-if="!isMyRecipes && !isMyFamilyRecipes">
+        <div class="favorite-section" v-if="$root.store.username && !isMyRecipes && !isMyFamilyRecipes">
           <b-button @click="addToFavorite" variant="outline-dark" :disabled="favorite">
             <b-icon-star></b-icon-star>
             <span class="feedback-text" :class="{ 'enabled': !favorite, 'disabled': favorite }">
@@ -57,18 +57,23 @@ export default {
     };
   },
   async created() {
+
+
     try {
       let response;
       if (this.$route.params.title === "My Recipes") {
         this.isMyRecipes = true;
-        response = await this.axios.get(
-          this.$root.store.server_domain + "/recipes/myFullDetailes?recipeid=" + this.$route.params.recipeId,
-          { withCredentials: true }
-        );
+        console.log(this.$route.params.recipeId);
+        this.axios.defaults.withCredentials = true;
+
+        response = await this.axios.get("https://liorkob.cs.bgu.ac.il/recipes/myFullDetailes?recipeid=" + this.$route.params.recipeId,
+
+        );        this.axios.defaults.withCredentials = false;
+
       } else if(this.$route.params.title === "My Family Recipes"){
         this.isMyFamilyRecipes = true;
         response = await this.axios.get(
-          this.$root.store.server_domain + "/recipes/myFamilyFullDetailes?recipeid=" + this.$route.params.recipeId,
+          "https://liorkob.cs.bgu.ac.il/recipes/myFamilyFullDetailes?recipeid=" + this.$route.params.recipeId,
           { withCredentials: true }
         );
         console.log(response.data);
@@ -78,7 +83,7 @@ export default {
       else {
         this.axios.defaults.withCredentials = true;
         response = await this.axios.get(
-          "http://localhost:3000/recipes/" + this.$route.params.recipeId,
+          "https://liorkob.cs.bgu.ac.il/recipes/" + this.$route.params.recipeId,
           {
             params: { id: this.$route.params.recipeId }
           }
@@ -192,11 +197,19 @@ export default {
     }
   },
   methods: {
+    // checkLoggedIn() {
+    //   if ($root.store.username.id="loggedInUser"){
+    //       return true;}
+    //   else{
+    //     return false
+    //   }
+    // },
+
     async addToFavorite() {
       try {
         this.axios.defaults.withCredentials = true;
         const response = await this.axios.post(
-          this.$root.store.server_domain + "/users/favorites",
+          "https://liorkob.cs.bgu.ac.il/users/favorites",
           {
             recipeId: this.$route.params.recipeId,
           }
@@ -214,7 +227,7 @@ export default {
       const recipe = { recipeId: this.$route.params.recipeId };
       try {
         const response = await this.axios.get(
-          this.$root.store.server_domain + "/users/favorites",
+          "https://liorkob.cs.bgu.ac.il/users/favorites",
           { withCredentials: true }
         );
 
@@ -243,11 +256,15 @@ export default {
 
 <style scoped>
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Your existing styles for .container */
+
+  /* Add background image here with the correct relative path */
+  background-image: url('../assets/r1.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%; /* Add this line to set the container height to 100% */
+  
 }
 
 .recipe-header {
@@ -336,4 +353,5 @@ export default {
 .instruction-step {
   color: #555;
 }
+
 </style>

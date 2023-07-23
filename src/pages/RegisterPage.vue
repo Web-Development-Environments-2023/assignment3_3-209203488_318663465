@@ -21,7 +21,7 @@
           Username length should be between 3-8 characters long
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-if="!$v.form.username.alpha">
-          Username alpha
+          Username should contain characters only
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -55,17 +55,18 @@
           :state="validateState('password')"
         ></b-form-input>
         <b-form-invalid-feedback v-if="!$v.form.password.required">
-          Password is required
-        </b-form-invalid-feedback>
-        <b-form-text v-else-if="$v.form.password.$error" text-variant="info">
-          Your password should be <strong>strong</strong>. <br />
-          For that, your password should be also:
-        </b-form-text>
-        <b-form-invalid-feedback
-          v-if="$v.form.password.required && !$v.form.password.length"
-        >
-          Have length between 5-10 characters long
-        </b-form-invalid-feedback>
+      Password is required
+    </b-form-invalid-feedback>
+    <b-form-text v-else-if="$v.form.password.$error">
+      Your password should be <strong>strong</strong>. <br />
+      For that, your password should be at least 5 characters long and contain at least 1 number and 1 special character.
+    </b-form-text>
+    <b-form-invalid-feedback v-else-if="!$v.form.password.length">
+      Password length should be between 5-10 characters long
+    </b-form-invalid-feedback>
+    <b-form-invalid-feedback v-else-if="!$v.form.password.alphaNumSpecial">
+      Password should contain at least 1 number and 1 special character
+    </b-form-invalid-feedback>
       </b-form-group>
 
       <b-form-group
@@ -150,7 +151,6 @@
         variant="primary"
         style="width:250px;"
         class="ml-5 w-75"
-        @click="onRegister()"
         >Register</b-button
       >
       <div class="mt-2">
@@ -184,6 +184,7 @@ import {
   sameAs,
   email
 } from "vuelidate/lib/validators";
+const alphaNumSpecial = value => /^[A-Za-z\d\W]*\d[A-Za-z\d\W]*\W[A-Za-z\d\W]*$/.test(value);
 
 export default {
   name: "Register",
@@ -216,7 +217,8 @@ export default {
       },
       password: {
         required,
-        length: (p) => minLength(5)(p) && maxLength(10)(p)
+        length: (p) => minLength(5)(p) && maxLength(10)(p),
+        alphaNumSpecial 
       },
       confirmedPassword: {
         required,
@@ -253,7 +255,7 @@ export default {
 
         const response = await this.axios.post(
           // "https://test-for-3-2.herokuapp.com/user/Register",
-          this.$root.store.server_domain + "/Register",
+          "https://liorkob.cs.bgu.ac.il/Register",
 
           {
             username: this.form.username,

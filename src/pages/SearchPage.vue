@@ -59,6 +59,10 @@
 <script>
 import RecipePreview from "../components/RecipePreview.vue";
 
+const LOCAL_STORAGE_KEY = "lastSearchQuery";
+
+
+
 export default {
   components: {
     RecipePreview
@@ -145,13 +149,21 @@ export default {
         recipe_details_fixed: [],// the fixed name of recipe query
         searchResult: []
       };
+      
     },
+    mounted() {
+    const savedSearchQuery = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedSearchQuery) {
+      this.searchQuery = savedSearchQuery;
+    }
+  },
+
   methods: {
     async Search() {
       try {
-        this.loading = true; // Set loading to true
+        this.loading = true;
 
-        const response = await this.axios.post("http://localhost:3000/recipes/search", {
+        const response = await this.axios.post("https://liorkob.cs.bgu.ac.il/recipes/search", {
           query: this.searchQuery,
           cuisine: this.searchCuisine,
           diet: this.searchDiet,
@@ -160,10 +172,13 @@ export default {
         });
         this.searchResult = response.data;
         this.searched = true;
+
+        // Save the search query to localStorage after a successful search
+        localStorage.setItem(LOCAL_STORAGE_KEY, this.searchQuery);
       } catch (error) {
         console.error(error);
       } finally {
-        this.loading = false; // Set loading back to false
+        this.loading = false;
       }
     }
   }
@@ -175,7 +190,9 @@ export default {
   max-width: 2200px;
   margin: 50px auto; /* Adjust the margin value */
   padding: 40px;
-  background-color: #ecf5f9; /* Light blue background */
+  background-image: url('../assets/r1.jpg');
+  height: 100vh; /* Set the height to 100% of the viewport height */
+  background-size: cover; /* Make the background image cover the entire container */
 }
 
 .search-query-box {

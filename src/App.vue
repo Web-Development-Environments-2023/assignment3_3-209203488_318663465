@@ -1,14 +1,16 @@
 
 <template>
   <div id="app"
-
-
   >
     <!-- <NavigationBar :logout="Logout"></NavigationBar> -->
 
     <!-- https://bootstrap-vue.org/docs/components/navbar#color-schemes -->
     <!-- <link rel="stylesheet" href='/static/back.css'><link/> -->
     <b-navbar>
+      <b-navbar-brand>
+        <img :src="require('@/assets/logo3.png')" alt="Logo" width="160" height="120" />
+      </b-navbar-brand>
+
       <b-navbar-nav>
         <b-nav-item href="#">
           <router-link :to="{ name: 'main' }">Main</router-link>
@@ -16,17 +18,19 @@
         <b-nav-item>
           <router-link :to="{ name: 'search' }">Search</router-link>
         </b-nav-item>
-         <!-- <b-nav-item href="#">
+         <b-nav-item href="#">
           <router-link :to="{ name: 'about' }">
           About
           </router-link>
-        </b-nav-item> -->
+        </b-nav-item>
       </b-navbar-nav>
 
       <b-navbar-nav v-if="$root.store.username" id="loggedInUser">
-        <b-nav-item>
-          <router-link :to="{ name: 'createNewRecipeModal' }">Create New Recipe</router-link>
+        <b-nav-item v-b-modal.add-recipe-modal>
+          Create New Recipe
         </b-nav-item>
+        <CreateNewRecipeModal />
+
 
         <b-nav-item-dropdown type="dark" variant="light" text="Personal">
           <b-dropdown-item href="#" id="favorites">
@@ -68,21 +72,30 @@
 
 
 <script>
+import CreateNewRecipeModal from "./pages/CreateNewRecipeModal";
 
 export default {
   name: "App",
+  components: { CreateNewRecipeModal },
   methods: {
     async Logout() {
       try {
+        
+
+        this.axios.defaults.withCredentials = true;
         const response = await this.axios.post(
-          this.$root.store.server_domain + "/Logout"
+          "https://liorkob.cs.bgu.ac.il/Logout"
         );
+        this.axios.defaults.withCredentials = false;
+
         this.$root.store.logout();
         if (response.message == "logout succeeded") {
           this.$root.toast("Logout", "User logged out successfully", "success");
+          
           this.$router.push("/").catch(() => {
             this.$forceUpdate();
           });
+
         }
       } catch (err) {
         console.log(err.response);
@@ -95,13 +108,9 @@ export default {
 
 
 
+
 <style scoped>
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f4f7f9;
-}
+
 
 .navbar {
   display: flex;
@@ -113,9 +122,10 @@ export default {
 }
 
 .navbar-brand {
-  font-size: 24px;
+  /* Adjust the font size and margin to position the logo properly */
+  font-size: 32px;
   font-weight: bold;
-  margin-right: 20px;
+  margin-right: 40px; /* Increase the margin to create space between the logo and text */
 }
 
 .navbar-links {
@@ -124,6 +134,7 @@ export default {
 }
 
 .navbar-link {
+  /* Adjust the font size and margin to improve the appearance of navigation items */
   font-size: 20px;
   font-weight: bold;
   color: #ffffff;
@@ -138,43 +149,24 @@ export default {
 }
 
 .navbar-dropdown {
-  position: relative;
+  /* Your existing styles for .navbar-dropdown */
 }
 
 .navbar-dropdown-toggle {
-  cursor: pointer;
-  font-size: 20px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-right: 20px;
-  transition: color 0.3s ease;
-}
-
-.navbar-dropdown-toggle:hover {
-  color: #2c3e50;
+  /* Your existing styles for .navbar-dropdown-toggle */
 }
 
 .navbar-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 200px;
-  padding: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  display: none;
-}
-
-.navbar-dropdown:hover .navbar-dropdown-menu {
-  display: block;
+  /* Your existing styles for .navbar-dropdown-menu */
 }
 
 .navbar-dropdown-item {
-  padding: 10px;
-  font-size: 18px;
+  /* Adjust the font size for dropdown items */
+  font-size: 16px;
   font-weight: bold;
   color: #2c3e50;
   text-decoration: none;
+  padding: 10px;
   transition: background-color 0.3s ease;
 }
 
@@ -188,7 +180,8 @@ export default {
 }
 
 .navbar-username {
-  font-size: 20px;
+  /* Adjust the font size for the username */
+  font-size: 18px;
   font-weight: bold;
   margin-right: 20px;
 }

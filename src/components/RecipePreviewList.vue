@@ -6,7 +6,7 @@
     </h3>
     <b-row>
       <b-col v-for="r in recipes" :key="r.id">
-        <RecipePreview class="recipePreview" :recipe="r" :title="title"
+        <RecipePreview class="recipePreview" :recipe="r" :title="title" :isMyRecipes="isMyRecipes" :isMyFamilyRecipes="isMyFamilyRecipes" />
  />
       </b-col>
     </b-row>
@@ -24,7 +24,16 @@ export default {
     title: {
       type: String,
       required: true
+    },
+    isMyRecipes: {
+      type: Boolean,
+      default: false
+    },
+    isMyFamilyRecipes: {
+      type: Boolean,
+      default: false
     }
+
   },
   data() {
     return {
@@ -52,7 +61,7 @@ export default {
 }
 
 .recipePreview {
-  border: 1px solid #3498db;
+  /* border: 1px solid #3498db; */
   padding: 10px;
   margin-bottom: 10px;
 }

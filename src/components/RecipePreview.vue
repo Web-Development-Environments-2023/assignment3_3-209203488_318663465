@@ -1,44 +1,115 @@
 <template>
   <router-link
-    :to="{ name: 'recipe', params: { recipeId: recipe.id, title: title }, }"
+    :to="{
+      name: 'recipe',
+      params: { recipeId: recipe.id, title: title },
+    }"
     class="recipe-preview"
   >
-    <div class="recipe-body">
-      <img :src="recipe.image" class="recipe-image" />
-    </div>
-    <div class="recipe-footer">
-      <div :title="recipe.title" class="recipe-title">
-        {{ recipe.title }}
-      </div>
-      <ul class="recipe-overview">
-        <li v-if="recipe.readyInMinutes !== undefined">{{ recipe.readyInMinutes }} minutes</li>
-        <li v-if="recipe.aggregateLikes !== undefined">{{ recipe.aggregateLikes }} likes</li>
-      </ul>
+    <div>
+      <b-card :img-src="recipe.image" img-alt="Image" img-top>
+        <b-card-header
+          :header="recipe.title"
+          :border-variant="watchedColor"
+          :header-border-variant="watchedColor"
+          :header-bg-variant="watchedColor"
+        >
+        </b-card-header>
+        <b-card-body class="recipe-body">
+          <div v-if="!isMyFamilyRecipes">
+            <b-avatar
+              variant="transparent"
+              icon="clock"
+              size="2em"
+            ></b-avatar>
+            {{ recipe.readyInMinutes }} minutes 
+            <br>
+            <b-avatar
+              variant="transparent"
+              icon="hand-thumbs-up"
+              size="2em"
+            ></b-avatar>
+            {{ recipe.aggregateLikes }} likes
+
+            <b-avatar class="eye-icon" v-if="seen " icon="eye" size="2em"></b-avatar>
+
+          </div>
+          <!-- <b-avatar v-if="watched" variant="tra"></b-avatar> -->
+        </b-card-body>
+        <b-card-body class="recipe-body">
+          <b-avatar
+            v-if="recipe.vegan"
+            variant="tranparent"
+            :src="require('@/assets/vegan.png')"
+            style="width: 2.5em; height: 3.3em"
+          >
+          </b-avatar>
+          <b-avatar
+            v-if="recipe.vegetarian"
+            variant="tranparent"
+            :src="require('@/assets/vegetarian.png')"
+            style="width: 4.5em; height: 3em"
+          >
+          </b-avatar>
+          <b-avatar
+            v-if="recipe.glutenFree"
+            variant="tranparent"
+            :src="require('@/assets/gluten_free.png')"
+            style="width: 3.8em; height: 3em"
+          >
+          </b-avatar>
+        </b-card-body>
+        <b-card-footer v-if="$root.store.username && !isMyRecipes && !isMyFamilyRecipes" class="recipe-footer">
+          <div class="favorite-section">
+            <b-button @click="addToFavorite" variant="outline-dark" :disabled="favorite">
+              <b-icon-star></b-icon-star>
+              <span class="feedback-text" :class="{ 'enabled': !favorite, 'disabled': favorite }"></span>
+            </b-button>
+          </div>
+
+        </b-card-footer>
+      </b-card>
     </div>
   </router-link>
 </template>
+
 <script>
 export default {
-  mounted() {
-  //   console.log("imaggggggeeeeeeeeeeeeeeeeeee")
+  async created() {
+    // Check if the user is logged in before performing favorite and seen checks
+    if (this.$root.store.username) {
+      try {
+        // Check if the recipe is in favorites
+        await this.checkIfFavorite();
 
-  //   this.axios.get(this.recipe.image).then((i) => {
-  //     console.log("imaggggggeeeeeeeeeeeeeeeeeee")
-
-  //     console.log(this.recipe.image)
-  //     this.image_load = true;
-  //   });
+        // Check if the recipe has been seen
+        await this.checkIfSeen();
+      } catch (error) {
+        console.log(error);
+      }
+    }
   },
+
   data() {
     return {
+      favorite: false,
+      seen: false, // Add a new data property to track the seen state
+
     };
   },
   props: {
+    isMyFamilyRecipes: {
+      type: Boolean,
+      default: false,
+    },
+    isMyRecipes: {
+      type: Boolean,
+      default: false,
+    },
     recipe: {
       type: Object,
-      required: true
+      required: true,
     },
-
     id: {
       type: Number,
       // required: true
@@ -60,17 +131,94 @@ export default {
       required: false,
       default() {
         return undefined;
+      },
+    },
+  },
+  methods: {
+    async addToFavorite() {
+      try {
+        this.axios.defaults.withCredentials = true;
+        const response = await this.axios.post(
+          "https://liorkob.cs.bgu.ac.il/users/favorites",
+          {
+            recipeId: this.recipe.id,
+          }
+        );
+        this.axios.defaults.withCredentials = false;
+        console.log(response.data);
+        this.favorite = true;
+      } catch (err) {
+        console.log(err.response);
+        this.form.submitError = err.response.data.message;
       }
-    }
-  }
+    },
+    async checkIfFavorite() {
+      const recipe = { recipeId: this.recipe.id };
+      try {
+        const response = await this.axios.get(
+          "https://liorkob.cs.bgu.ac.il/users/favorites",
+          { withCredentials: true }
+        );
+
+        if (response != undefined) {
+          for (let i = 0; i < response.data.length; i++) {
+            if (response.data[i].id === recipe.recipeId) {
+              this.favorite = true;
+              // Set showFavoritesButton to false if it's "My Recipe" or "My Family"
+              break;
+            } else {
+              continue;
+            }
+          }
+        }
+        if (response == undefined) {
+          this.favorite = false;
+        }
+
+        console.log(response);
+      } catch (err) {
+        console.log(err.response);
+      }
+    },
+    // Method to check if the recipe is seen
+    async checkIfSeen() {
+      const recipe = { recipeId: this.recipe.id };
+      try {
+        const response = await this.axios.get(
+          "https://liorkob.cs.bgu.ac.il/users/seen",
+          {
+          params: {
+              recipeId: recipe.recipeId, // Include the recipeId in the query parameters
+            },
+           withCredentials: true }
+        );
+
+        if (response != undefined) {
+          for (let i = 0; i < response.data.length; i++) {
+            if (response.data[i].id === recipe.recipeId) {
+              this.seen = true;
+              break;
+            }
+          }
+        }
+      } catch (err) {
+        console.log(err.response);
+      }
+    },
+  },
 };
 </script>
 <style scoped>
+.eye-icon {
+  position: absolute;
+  top: 10px; /* Adjust this value to control the vertical position */
+  left: 10px; /* Adjust this value to control the horizontal position */
+}
+
 .recipe-preview {
   text-align: left;
   box-shadow: none;
   border: none;
-  transition: box-shadow ease .15s;
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
@@ -81,11 +229,22 @@ export default {
   text-align: center;
   text-decoration: none;
   color: #222;
-  background: #f4f7f9; /* Light blue background */
+  background: #fff;
   font-size: 1rem;
   border: 1px solid #eee;
-  box-shadow: 1px 1px 6px 0 rgba(0,0,0,.09);
+  box-shadow: 1px 1px 6px 0 rgba(0, 0, 0, .09);
   transition: all .25s ease;
+  height: 150px;
+}
+
+.recipe-preview:hover {
+  top: -5px; /* Move the recipe a little to the top-left diagonal */
+}
+
+.recipe-preview:hover,
+.recipe-preview:hover .recipe-footer {
+  box-shadow: 2px 2px 8px 0 rgba(0, 0, 0, .12); /* Add shadow on hover */
+  background: #76a7ec; /* Dark blue background on hover */
 }
 
 .recipe-preview > .recipe-body {
@@ -116,6 +275,13 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.enabled {
+  color: green;
+}
+
+.disabled {
+  color: red;
 }
 
 .recipe-preview .recipe-footer ul.recipe-overview {

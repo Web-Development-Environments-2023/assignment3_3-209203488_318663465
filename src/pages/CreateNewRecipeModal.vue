@@ -1,7 +1,15 @@
 <template>
-  <div class="container">
-    <h1 class="title">Create new recipe</h1>
-    <b-form ref="form" @submit.prevent="handleOk" @reset.prevent="resetModal">
+  <b-modal
+    id="add-recipe-modal"
+    ref="modal"
+    title="Add New Recipe"
+    @show="resetModal"
+    @hidden="resetModal"
+    @ok="handleOk"
+    >Ceate You're New Recipe:
+    <br />
+    <br />
+    <b-form ref="form" @submit.prevent="handleSubmit" @reset.prevent="resetModal">
       <b-form-group label="Recipe's Title: " label-for="title-input">
         <b-form-input
           id="title-input"
@@ -17,20 +25,20 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
-<b-form-group label="Recipe's image URL: " label-for="image-input">
-  <b-form-input
-    id="image-input"
-    v-model="$v.form.image.$model"
-    type="url"
-    :state="validateState('image')"
-  ></b-form-input>
-  <b-form-invalid-feedback v-if="!$v.form.image.required">
-    Recipe's image URL is required
-  </b-form-invalid-feedback>
-  <b-form-invalid-feedback v-if="!$v.form.image.url">
-    Recipe's image URL should be a valid URL
-  </b-form-invalid-feedback>
-</b-form-group>
+      <b-form-group label="Recipe's image URL: " label-for="image-input">
+        <b-form-input
+          id="image-input"
+          v-model="$v.form.image.$model"
+          type="url"
+          :state="validateState('image')"
+        ></b-form-input>
+        <b-form-invalid-feedback v-if="!$v.form.title.required">
+          Recipe's image URL is required
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-if="!$v.form.title.url">
+          Recipe's image URL should be URL
+        </b-form-invalid-feedback>
+      </b-form-group>
 
       <b-form-group label="Recipe's Servings: " label-for="servings-input">
         <b-form-input
@@ -104,7 +112,7 @@
       </b-form-group>
     </b-form>
 
-    <b-form @submit.stop.prevent="handleOk">
+    <b-form @submit.stop.prevent="handleSubmit">
       <label>Ingredients:</label>
       <b-form-group
         v-for="ing in $v.form.ingrediants.$each.$iter"
@@ -145,7 +153,7 @@
       </b-button-toolbar>
     </b-form>
 
-    <b-form @submit.stop.prevent="handleOk">
+    <b-form @submit.stop.prevent="handleSubmit">
       <label>Instructions:</label>
       <b-form-group
         v-for="ins in $v.form.instractions.$each.$iter"
@@ -181,17 +189,8 @@
           </b-button>
         </b-button-group>
       </b-button-toolbar>
-      <b-button
-        type="submit"
-        variant="primary"
-        style="width:250px;"
-        class="ml-5 w-75"
-        @click="handleOk()"
-        >create</b-button
-      >
     </b-form>
-</div>
-
+  </b-modal>
 </template>
 
 <script>
@@ -205,7 +204,15 @@ import {
 } from "vuelidate/lib/validators";
 
 export default {
-  name: "newR",
+  name: "NewRecipe",
+  beforeRouteEnter(to, from, next) {
+    // Reload the page when routing to the "myrecipes" route
+    if (to.name === "myrecipes") {
+      window.location.reload();
+    }
+    next();
+  },
+
   data() {
     return {
       form: {
@@ -299,21 +306,19 @@ export default {
       });
     },
 
-
-
-    handleOk() {
-
+    handleOk(bvModalEvent) {
+      // Prevent modal from closing
+      bvModalEvent.preventDefault();
       // Trigger submit handler
       this.$v.form.$touch();
       if (this.$v.form.$anyError) {
         return;
       }
-      this.createNewRecipe();
+      this.handleSubmit();
     },
 
     async createNewRecipe() {
       try {
-
         const ingrediants = [];
         for (let i = 0; i < this.ingrediantsCounter; i++) {
           ingrediants.push({
@@ -321,19 +326,11 @@ export default {
             ingredients_name: this.form.ingrediants[i].value
           });
               }
-
-          // Resulting JSON format
-
-  const ingrediantsJson = JSON.stringify(ingrediants)
-  // .replace(/"/g, '\\"')  // Escape double quotes
-  // .replace(/'/g, '\\"'); // Escape single quotes (optional)
-
-// const ingrediantsJson = `"[${json}]"`;
+        const ingrediantsJson = JSON.stringify(ingrediants)
 
 
 
-
-          const instractions = [];
+        const instractions = [];
 
 for (let i = 0; i < this.instructionsCounter; i++) {
   instractions.push({
@@ -342,11 +339,7 @@ for (let i = 0; i < this.instructionsCounter; i++) {
   });
 }
 // Resulting JSON format
-const instractionsJson = JSON.stringify(instractions)
-  // .replace(/"/g, '\\"')  // Escape double quotes
-  // .replace(/'/g, '\\"'); // Escape single quotes (optional)
-
-// const instractionsJson = `"[${json2}]"`;
+const instractionsJson = JSON.stringify(instractions);
 
 let _vegan = 0;
 
@@ -354,32 +347,25 @@ if(this.form.vegan==true){
   
   _vegan = 1;
 }
-console.log(_vegan)
+
 
 let _vegetarian = 0;
 if(this.form.vegetarian==true){
   _vegetarian = 1;
 }
 
-console.log(_vegetarian)
 
 let _gluten_free = 0;
 if(this.form.gluten_free==true){
   _gluten_free = 1;
 }
-console.log(_gluten_free)
-console.log(this.form.servings)
-console.log(this.form.readyInMinutes)
-console.log(this.form.popularity)
-
-
 
         // this.form.ingrediants = _ingredients;
         // this.form.instractions = _instructions;
         this.axios.defaults.withCredentials = true ;
 
         const response = await this.axios.post(
-        "http://localhost:3000/recipes/new",
+        "https://liorkob.cs.bgu.ac.il/recipes/new",
           {
             title: this.form.title,
             image: this.form.image,
@@ -395,20 +381,27 @@ console.log(this.form.popularity)
         );
         this.axios.defaults.withCredentials = false ;
 
-
         if (response.status == 200) {
           this.$root.toast(
             "Created New Recipe",
             "New recipe added successfully",
             "success"
           );
-          this.resetModal();
+          this.$router.push({ name: 'myrecipes' });
+
         }
-        
       } catch (err) {
         console.log(err.response);
-        this.form.submitError = err.response.data.message;
+        // this.form.submitError = err.response.data.message;
       }
+    },
+
+    handleSubmit() {
+      // Hide the modal manually
+      this.createNewRecipe();
+      this.$nextTick(() => {
+        this.$bvModal.hide("add-recipe-modal");
+      });
     },
 
     addIngredient() {
@@ -447,99 +440,4 @@ console.log(this.form.popularity)
 </script>
 
 <style scoped>
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f4f7f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.b-form-group {
-  margin-bottom: 20px;
-}
-
-.b-form-label {
-  font-weight: bold;
-  color: #333;
-}
-
-.b-form-input {
-  border-color: #ddd;
-  border-radius: 4px;
-  padding: 10px;
-}
-
-.b-form-invalid-feedback {
-  color: #dc3545;
-}
-
-.b-form-checkbox .form-check-label {
-  color: #333;
-}
-
-.b-button-toolbar {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.b-button-group {
-  display: flex;
-}
-
-.b-button-group .btn {
-  padding: 5px 10px;
-}
-
-.b-button-toolbar .btn {
-  font-size: 14px;
-}
-
-.b-button-group .btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.b-button-toolbar .btn:not(:last-child) {
-  margin-right: 5px;
-}
-
-.b-button-toolbar .btn:last-child {
-  margin-left: 5px;
-}
-
-.b-button-toolbar .btn-title {
-  margin-left: 5px;
-}
-
-.b-button-toolbar .btn svg {
-  fill: #007bff;
-}
-
-.b-button-toolbar .btn[disabled] svg {
-  fill: #ccc;
-}
-
-.b-button-toolbar .btn[disabled] .btn-title {
-  color: #ccc;
-}
-.b-form-checkbox .custom-control-label::before {
-  width: 18px;
-  height: 18px;
-}
-
-.b-form-checkbox .custom-control-label::after {
-  width: 10px;
-  height: 10px;
-  top: 4px;
-  left: 4px;
-}
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-      <RecipePreviewList title="My Family Recipes" ref="recipePreviewList" />
+      <RecipePreviewList title="My Family Recipes" :isMyFamilyRecipes="true" ref="recipePreviewList" />
   
   </div>
     </template>
@@ -42,7 +42,7 @@
     
             const response = await this.axios.get(
               // this.$root.store.server_domain + "/",
-              this.$root.store.server_domain +"/recipes/Family",
+              "https://liorkob.cs.bgu.ac.il/recipes/Family",
               // this.$root.store.server_domain + "/",
     
             );
